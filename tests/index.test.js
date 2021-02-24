@@ -92,7 +92,7 @@ describe("Stage II: testing user creation and login", () => {
       .post("/users/login")
       .send(invalidCredentials);
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(401);
 
     const { token } = response.body;
     expect(token).not.toBeDefined();

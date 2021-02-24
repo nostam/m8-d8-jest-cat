@@ -39,7 +39,7 @@ router.post("/login", async (req, res) => {
       ? res.status(200).send({ token: "VALID_TOKEN" })
       : res.status(400).send({ message: "No username/password match" });
   } catch (error) {
-    res.status(400).send({
+    res.status(401).send({
       message: error.message,
       errorCode: "wrong_credentials",
     });
