@@ -1,9 +1,8 @@
 const server = require("../src/server");
 const request = require("supertest")(server);
 const mongoose = require("mongoose");
+const UserModel = require("../src/services/users/schema");
 
-const UserSchema = require("../src/services/users/schema");
-const UserModel = require("mongoose").model("User", UserSchema);
 const jwt = require("jsonwebtoken");
 
 beforeAll((done) => {
@@ -39,7 +38,10 @@ describe("Stage I: Testing tests", () => {
 });
 
 // II: Testing user creation and login
+
+let id = "";
 let tokens = {};
+
 describe("Stage II: testing user creation and login", () => {
   const validCredentials = {
     username: "luisanton.io",
@@ -56,7 +58,6 @@ describe("Stage II: testing user creation and login", () => {
   };
 
   const validToken = (pwd) => "VALID_TOKEN";
-  let id = "";
 
   it("should return an id from a /users/register endpoint when provided with valid credentials", async () => {
     const response = await request
@@ -87,13 +88,15 @@ describe("Stage II: testing user creation and login", () => {
 
     const { accessToken, refreshToken } = response.body;
     tokens = { accessToken, refreshToken };
+    // let decoded = await jwt.verify(accessToken, process.env.JWT_SECRET);
     expect(jwt.verify(accessToken, process.env.JWT_SECRET)).toMatchObject({
       _id: id,
       exp: expect.any(Number),
       iat: expect.any(Number),
     });
-    expect(jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET));
-    toMatchObject({
+    expect(
+      jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET)
+    ).toMatchObject({
       _id: id,
       exp: expect.any(Number),
       iat: expect.any(Number),
@@ -113,5 +116,8 @@ describe("Stage II: testing user creation and login", () => {
 });
 
 describe("Stage III: Testing protected endpoints", () => {
-  it("");
+  it("/cats route requires authentication", async () => {
+    const res = await request.get("/cats");
+    expect(res.status).toBe(401);
+  });
 });

@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const UserModel = require("mongoose");
+const UserModel = require("./schema");
 
 const { authenticate } = require("../auth");
 

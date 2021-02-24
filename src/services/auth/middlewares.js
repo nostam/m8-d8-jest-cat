@@ -4,7 +4,9 @@ const { verifyJWT } = require("./index");
 
 const authorize = async (req, res, next) => {
   try {
+    if (!req.headers.authorization) throw new Error();
     const token = req.headers.authorization.split(" ")[1];
+    if (!token) throw new Error();
     const decoded = await verifyJWT(token);
     const user = await UserModel.findById(decoded._id);
     if (!user) throw new Error();
@@ -12,7 +14,6 @@ const authorize = async (req, res, next) => {
     req.user = user;
     next();
   } catch (e) {
-    console.log(e);
     next(new APIError(401, "Please authenticate"));
   }
 };
