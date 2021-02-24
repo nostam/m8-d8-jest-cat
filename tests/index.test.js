@@ -155,6 +155,9 @@ describe("Stage III: Testing protected endpoints", () => {
     expect(res.status).toEqual(200);
     expect(res.body).toMatchObject({
       id: expect.any(String),
+      created_at: expect.any(String),
+      url: expect.any(String),
     });
+    expect(res.body.url).toBeDefined();
   });
 });
