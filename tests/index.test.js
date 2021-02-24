@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 
 const UserSchema = require("../src/services/users/schema");
 const UserModel = require("mongoose").model("User", UserSchema);
+const jwt = require("jsonwebtoken");
 
 beforeAll((done) => {
   mongoose.connect(
@@ -54,14 +55,15 @@ describe("Stage II: testing user creation and login", () => {
     password: "incorrectPassword",
   };
 
-  const validToken = "VALID_TOKEN";
-
+  const validToken = (pwd) => "VALID_TOKEN";
+  let id = "";
   it("should return an id from a /users/register endpoint when provided with valid credentials", async () => {
     const response = await request
       .post("/users/register")
       .send(validCredentials);
 
     const { _id } = response.body;
+    id = _id;
     expect(_id).toBeDefined();
     expect(typeof _id).toBe("string");
 
@@ -80,11 +82,20 @@ describe("Stage II: testing user creation and login", () => {
   });
 
   it("should return a valid token when loggin in with correct credentials", async () => {
-    // "VALID_TOKEN"
     const response = await request.post("/users/login").send(validCredentials); //
 
-    const { token } = response.body;
-    expect(token).toBe(validToken);
+    const { accessToken, refreshToken } = response.body;
+    expect(jwt.verify(accessToken, process.env.JWT_SECRET)).toMatchObject({
+      _id: id,
+      exp: expect.any(Number),
+      iat: expect.any(Number),
+    });
+    expect(jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET));
+    toMatchObject({
+      _id: id,
+      exp: expect.any(Number),
+      iat: expect.any(Number),
+    });
   });
 
   it("should NOT return a valid token when loggin in with INCORRECT credentials", async () => {
@@ -98,5 +109,4 @@ describe("Stage II: testing user creation and login", () => {
     expect(token).not.toBeDefined();
   });
 });
-
 // III: Testing protected endpoints

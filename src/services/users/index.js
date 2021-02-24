@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const UserSchema = require("./schema");
 const UserModel = require("mongoose").model("User", UserSchema);
-
+const { authenticate } = require("../auth");
 router.get("/all", async (req, res) => {
   try {
     const db = await UserModel.find({});
@@ -33,11 +33,11 @@ router.post("/login", async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) throw new Error("Provide credentials");
 
-    const user = await UserModel.findOne({ username });
+    const user = await UserModel.findByCredentials(username, password);
+    const { accessToken, refreshToken } = await authenticate(user);
 
-    user.password === password
-      ? res.status(200).send({ token: "VALID_TOKEN" })
-      : res.status(400).send({ message: "No username/password match" });
+    if (!user) res.status(400).send({ message: "No username/password match" });
+    else res.send({ accessToken, refreshToken });
   } catch (error) {
     res.status(401).send({
       message: error.message,
