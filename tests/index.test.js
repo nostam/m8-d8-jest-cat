@@ -39,7 +39,7 @@ describe("Stage I: Testing tests", () => {
 });
 
 // II: Testing user creation and login
-
+let tokens = {};
 describe("Stage II: testing user creation and login", () => {
   const validCredentials = {
     username: "luisanton.io",
@@ -57,6 +57,7 @@ describe("Stage II: testing user creation and login", () => {
 
   const validToken = (pwd) => "VALID_TOKEN";
   let id = "";
+
   it("should return an id from a /users/register endpoint when provided with valid credentials", async () => {
     const response = await request
       .post("/users/register")
@@ -85,6 +86,7 @@ describe("Stage II: testing user creation and login", () => {
     const response = await request.post("/users/login").send(validCredentials); //
 
     const { accessToken, refreshToken } = response.body;
+    tokens = { accessToken, refreshToken };
     expect(jwt.verify(accessToken, process.env.JWT_SECRET)).toMatchObject({
       _id: id,
       exp: expect.any(Number),
@@ -109,4 +111,7 @@ describe("Stage II: testing user creation and login", () => {
     expect(token).not.toBeDefined();
   });
 });
-// III: Testing protected endpoints
+
+describe("Stage III: Testing protected endpoints", () => {
+  it("");
+});

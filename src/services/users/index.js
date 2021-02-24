@@ -1,7 +1,8 @@
 const router = require("express").Router();
-const UserSchema = require("./schema");
-const UserModel = require("mongoose").model("User", UserSchema);
+const UserModel = require("mongoose");
+
 const { authenticate } = require("../auth");
+
 router.get("/all", async (req, res) => {
   try {
     const db = await UserModel.find({});

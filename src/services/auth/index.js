@@ -60,11 +60,11 @@ const verifyRefreshToken = (token) =>
 const refreshToken = async (oldRefreshToken) => {
   const decoded = await verifyRefreshToken(oldRefreshToken);
   const user = await UserModel.findOne({ _id: decoded._id });
-  if (!user) throw new APIError(`Access is forbidden`, 403);
+  if (!user) throw new APIError(403, `Access is forbidden`);
   const currentRefreshToken = user.refreshTokens.find(
     (t) => t.token === oldRefreshToken
   );
-  if (!currentRefreshToken) throw new APIError(`Refresh token is wrong`, 400);
+  if (!currentRefreshToken) throw new APIError(400, `Refresh token is wrong`);
 
   const accessToken = await generateJWT({ _id: user._id });
   const refreshToken = await generateRefreshJWT({ _id: user._id });
